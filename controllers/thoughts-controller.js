@@ -7,7 +7,7 @@ const thoughtsController = {
       .then(({ _id }) => {
         return Users.findOneAndUpdate(
           { _id: params.userId },
-          { $push: { comments: _id } },
+          { $push: { thoughts: _id } },
           { new: true }
         );
       })
@@ -23,7 +23,7 @@ const thoughtsController = {
   },
 
   getAllThoughts(req, res) {
-    Thought.find({})
+    Thoughts.find({})
       .select("-__v")
       .sort({ _id: -1 })
       .then((dbThoughtData) => res.json(dbThoughtData))
@@ -35,7 +35,7 @@ const thoughtsController = {
 
   getThoughtById({ params }, res) {
     console.log("params sent", params)
-    Thought.findOne({ _id: params.thoughtId })
+    Thoughts.findOne({ _id: params.thoughtId })
       .select("-__v")
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
@@ -74,8 +74,8 @@ const thoughtsController = {
 
   addReaction({ params, body }, res) {
     Thoughts.findOneAndUpdate(
-      { _id: params.reactionId },
-      { $push: { replies: body } },
+      { _id: params.thoughtId },
+      { $push: { reactions: body } },
       { new: true, runValidators: true }
     )
       .then(dbUserData => {
@@ -91,7 +91,7 @@ const thoughtsController = {
   removeReaction({ params }, res) {
     Thoughts.findOneAndUpdate(
       { _id: params.thoughtId },
-      { $pull: { replies: { replyId: params.reactionId } } },
+      { $pull: { reactions: { reactionId: params.reactionId } } },
       { new: true }
     )
       .then(dbUserData => res.json(dbUserData))
